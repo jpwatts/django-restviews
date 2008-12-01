@@ -1,3 +1,5 @@
+"""RESTful Views for Django"""
+
 from django.http import HttpResponseNotAllowed
 
 
@@ -24,9 +26,43 @@ class ResourceBase(type):
 class Resource(object):
     """A base class for creating RESTful Django views.
 
-    When called, the view checks ``request.method`` to dispatch to the
-    appropriate method handler or returns an HTTP 405 if the method is
-    not allowed.
+    When called, dispatch based on the value of ``request.method``.  If
+    there isn't a handler for the method, return an HTTP 405.
+
+    >>> from django.http import HttpResponse
+    >>> class View(Resource):
+    ...     def DELETE(self, request):
+    ...         return HttpResponse('', status=204)
+    ...
+    ...     def GET(self, request):
+    ...         return HttpResponse('Resource', content_type='text/plain')
+
+    >>> from django.http import HttpRequest
+    >>> request = HttpRequest()
+    >>> view = View()
+
+    >>> request.method = 'DELETE'
+    >>> response = view(request)
+    >>> response.content
+    ''
+    >>> response.status_code
+    204
+
+    >>> request.method = 'GET'
+    >>> response = view(request)
+    >>> response.content
+    'Resource'
+    >>> response.status_code
+    200
+
+    >>> request.method = 'PUT'
+    >>> response = view(request)
+    >>> response.content
+    ''
+    >>> response.status_code
+    405
+    >>> response['Allow']
+    'DELETE, GET'
 
     """
     __metaclass__ = ResourceBase
