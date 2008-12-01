@@ -1,6 +1,6 @@
 """RESTful Views for Django"""
 
-from django.http import HttpResponseNotAllowed
+from django import http
 
 
 __all__ = ['Resource']
@@ -29,16 +29,14 @@ class Resource(object):
     When called, dispatch based on the value of ``request.method``.  If
     there isn't a handler for the method, return an HTTP 405.
 
-    >>> from django.http import HttpResponse
     >>> class View(Resource):
     ...     def DELETE(self, request):
-    ...         return HttpResponse('', status=204)
+    ...         return http.HttpResponse('', status=204)
     ...
     ...     def GET(self, request):
-    ...         return HttpResponse('Resource', content_type='text/plain')
+    ...         return http.HttpResponse('Resource')
 
-    >>> from django.http import HttpRequest
-    >>> request = HttpRequest()
+    >>> request = http.HttpRequest()
     >>> view = View()
 
     >>> request.method = 'DELETE'
@@ -69,5 +67,5 @@ class Resource(object):
 
     def __call__(self, request, *args, **kwargs):
         if request.method not in self.allow:
-            return HttpResponseNotAllowed(self.allow)
+            return http.HttpResponseNotAllowed(self.allow)
         return getattr(self, request.method)(request, *args, **kwargs)
