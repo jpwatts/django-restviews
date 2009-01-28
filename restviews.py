@@ -17,8 +17,16 @@ METHODS = """OPTIONS
              CONNECT""".split()
 
 
+def _default_HEAD(self, request, *args, **kwargs):
+    response = self.GET(request, *args, **kwargs)
+    response.content = ''
+    return response
+
+
 class ResourceBase(type):
     def __new__(cls, name, bases, attrs):
+        if 'GET' in attrs:
+            attrs.setdefault('HEAD', _default_HEAD)
         attrs['allow'] = sorted(k for k in attrs if k in METHODS)
         return super(ResourceBase, cls).__new__(cls, name, bases, attrs)
 
