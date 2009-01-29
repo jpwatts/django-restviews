@@ -3,7 +3,7 @@
 from django import http
 
 
-__all__ = ['Resource']
+__all__ = ('Resource',)
 
 
 # http://www.ietf.org/rfc/rfc2616
@@ -61,6 +61,13 @@ class Resource(object):
     >>> response.status_code
     200
 
+    >>> request.method = 'HEAD'
+    >>> response = view(request)
+    >>> response.content
+    ''
+    >>> response.status_code
+    200
+
     >>> request.method = 'PUT'
     >>> response = view(request)
     >>> response.content
@@ -68,7 +75,7 @@ class Resource(object):
     >>> response.status_code
     405
     >>> response['Allow']
-    'DELETE, GET'
+    'DELETE, GET, HEAD'
 
     """
     __metaclass__ = ResourceBase
